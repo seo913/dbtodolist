@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User{
+  id Int @id @default(autoincrement())  //아이디를 아이디값으로 사용하겠다. autoincrement = 자동으로 생성할때마다 하나씩 자동으로 증가
+  account String @unique //중복되지 않은값
+  name String? //써도 되고 안써도 되고
+  todos Todo[]
+  createdAt DateTime @default(now()) //현재시간
+  updatedAt DateTime @updatedAt // 처음엔 생성시간 같은 값인데 업데이트가 이루어 질때마다 갱신
+}
+
+model Todo{
+  id Int @id @default(autoincrement())
+  todo String 
+  isDone Boolean
+  user User @relation(fields: [userId], references: [id]) // 첫번째 필드에 어떤아이디가져올건지 두번째 아이디는 유저에 있는 아이디
+  userId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId]) //이걸 해야 검색효율을 증가시키고 스키마작성할때 오류가 안난다.
+}
